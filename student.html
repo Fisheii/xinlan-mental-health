@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>心澜智护 - 学生端 | AI情绪树洞</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Montserrat:wght@300;400;500&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+  
+  <canvas id="webgl-canvas"></canvas>
+  <div class="bg-overlay active-overlay"></div>
+
+  <!-- 顶部导航栏 -->
+  <nav class="glass-nav">
+    <div class="nav-logo">
+      <!-- 统一 Logo 字体 -->
+      <span class="serif-text" style="color: #2c3e50;">心澜智护</span>
+    </div>
+    <ul class="nav-links">
+      <li class="active"><i class="fa-solid fa-leaf"></i> AI情绪树洞</li>
+      <li><i class="fa-solid fa-clipboard-list"></i> 心理测评</li>
+      <li><i class="fa-solid fa-spa"></i> 心灵氧吧</li>
+      <li><i class="fa-solid fa-book-open"></i> 心理科普</li>
+      <li><i class="fa-solid fa-user"></i> 个人中心</li>
+    </ul>
+    <div class="nav-user">
+      <div class="growth-badge"><i class="fa-solid fa-seedling"></i> 120 成长值</div>
+      <div class="level-badge">Lv.2</div>
+      <div class="avatar">同</div>
+    </div>
+  </nav>
+
+  <!-- 主体聊天容器 -->
+  <main class="chat-container">
+    <header class="chat-header">
+      <div class="persona-selector">
+        <div class="current-persona" id="persona-toggle">
+          <div class="icon-box"><i class="fa-solid fa-sun" id="current-persona-icon"></i></div>
+          <div class="persona-info">
+            <h3 id="current-persona-name">温柔倾听者</h3>
+            <p id="current-persona-desc">耐心倾听，温暖陪伴</p>
+          </div>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </div>
+        <!-- 下拉菜单 -->
+        <div class="persona-dropdown" id="persona-menu">
+          <div class="persona-option active" data-role="温柔倾听者" data-icon="fa-sun" data-desc="耐心倾听，温暖陪伴">
+            <i class="fa-solid fa-sun"></i>
+            <div><h4>温柔倾听者</h4><span>耐心倾听，温暖陪伴</span></div>
+          </div>
+          <div class="persona-option" data-role="阳光伙伴" data-icon="fa-face-smile" data-desc="积极向上，带来好心情">
+            <i class="fa-solid fa-face-smile"></i>
+            <div><h4>阳光伙伴</h4><span>积极向上，带来好心情</span></div>
+          </div>
+          <div class="persona-option" data-role="冷静导师" data-icon="fa-compass" data-desc="理性分析，提供见解">
+            <i class="fa-solid fa-compass"></i>
+            <div><h4>冷静导师</h4><span>理性分析，提供见解</span></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chat-actions">
+        <button class="action-btn outline"><i class="fa-regular fa-envelope"></i> 发送给心理老师</button>
+        <button class="action-btn danger-outline" id="clear-chat-btn"><i class="fa-regular fa-trash-can"></i> 清空对话</button>
+      </div>
+    </header>
+
+    <!-- 聊天记录区 -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- 初始只保留 AI 的欢迎语 -->
+      <div class="message ai-message">
+        <div class="msg-avatar"><i class="fa-solid fa-sun"></i></div>
+        <div class="msg-bubble">
+          你好呀，同学！我是你的情绪陪伴者。今天有什么想和我分享的吗？可以告诉我你的心情，或者生活中的烦恼~
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部输入区 -->
+    <footer class="chat-footer">
+      <div class="quick-replies">
+        <span class="chip">今天有点累</span>
+        <span class="chip">最近压力大</span>
+        <span class="chip">想找人聊聊</span>
+        <span class="chip">需要一些鼓励</span>
+      </div>
+      <div class="input-wrapper">
+        <textarea placeholder="分享你的心情，AI 陪伴倾听..." id="chat-input"></textarea>
+        <button class="send-btn" id="send-btn"><i class="fa-solid fa-paper-plane"></i> 发送</button>
+      </div>
+      <div class="disclaimer">
+        <i class="fa-solid fa-circle-info"></i> AI 陪伴不能替代专业心理咨询，如有需要请联系专业心理老师
+      </div>
+    </footer>
+  </main>
+
+  <!-- SOS 悬浮按钮 -->
+  <button class="sos-btn" id="sos-btn">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span>SOS</span>
+  </button>
+
+  <!-- SOS 求助弹窗 (默认隐藏) -->
+  <div class="sos-modal-overlay" id="sos-modal">
+    <div class="sos-modal-content">
+      <button class="close-modal" id="close-sos-btn"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div class="sos-header-text">
+        <div class="sos-icon-large"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <h2>遇到困难了吗？我们在这里帮助你</h2>
+        <p>你现在的感受是重要的，请记住你并不孤单。选择适合你的求助方式。</p>
+      </div>
+
+      <div class="sos-list">
+        <div class="sos-card" style="border-left-color: #48bb78;">
+          <div class="card-icon" style="background: #f0fff4; color: #48bb78;"><i class="fa-solid fa-user-nurse"></i></div>
+          <div class="card-info"><h4>联系学校心理老师</h4><span>专业的心理咨询服务，保护你的隐私</span></div>
+          <i class="fa-solid fa-chevron-right arrow-right"></i>
+        </div>
+        <div class="sos-card" style="border-left-color: #4299e1;">
+          <div class="card-icon" style="background: #ebf8ff; color: #4299e1;"><i class="fa-solid fa-user-tie"></i></div>
+          <div class="card-info"><h4>联系班主任</h4><span>获取老师的关心和支持</span></div>
+          <i class="fa-solid fa-chevron-right arrow-right"></i>
+        </div>
+        <div class="sos-card" style="border-left-color: #ed8936;">
+          <div class="card-icon" style="background: #fffaf0; color: #ed8936;"><i class="fa-solid fa-house"></i></div>
+          <div class="card-info"><h4>联系家长或监护人</h4><span>家人的支持和陪伴</span></div>
+          <i class="fa-solid fa-chevron-right arrow-right"></i>
+        </div>
+        <div class="sos-card" style="border-left-color: #f56565;">
+          <div class="card-icon" style="background: #fff5f5; color: #f56565;"><i class="fa-solid fa-phone"></i></div>
+          <div class="card-info"><h4>心理援助热线</h4><span>全国统一援助热线 12355</span></div>
+          <i class="fa-solid fa-chevron-right arrow-right"></i>
+        </div>
+      </div>
+
+      <div class="self-help-section">
+        <h3>自助调节方法</h3>
+        <div class="self-help-grid">
+          <div class="help-item">
+            <i class="fa-solid fa-wind" style="color: #4299e1;"></i>
+            <div><h5>4-7-8 呼吸法</h5><span>吸气4秒，屏气7秒，呼气8秒</span></div>
+          </div>
+          <div class="help-item">
+            <i class="fa-solid fa-eye" style="color: #805ad5;"></i>
+            <div><h5>5-4-3-2-1 接地技术</h5><span>识别周围事物，转移注意力</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/student.js"></script>
+</body>
+</html>

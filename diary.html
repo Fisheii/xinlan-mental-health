@@ -238,6 +238,22 @@
             <span><i class="ri-snowy-line"></i> 初雪</span>
         </div>
     </div>
+<!-- 1. 隐藏的 SVG 滤镜（放在 body 内任意位置即可，建议放在最前面或最后面） -->
+<svg style="display: none;">
+  <filter id="crumple-filter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise" />
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G" id="displacement-map" />
+  </filter>
+</svg>
+
+<!-- 2. 日记纸张的 UI 结构 -->
+<div class="journal-wrapper">
+    <div class="paper" id="journalPaper">
+        <h3>今日心语</h3>
+        <!-- 这里可以换成你自己的 textarea 输入框 -->
+        <p>在这里写下你的烦恼...（长按模拟揉碎它）</p> 
+    </div>
+</div>
 
     <script>
         // 1. 编辑器字数统计与占位符逻辑
@@ -329,5 +345,8 @@
         initCanvas();
         drawSnow();
     </script>
+        <!-- 在 body 结束前引入相应的 JS -->
+    <script src="./diary.js"></script>
 </body>
 </html>
+

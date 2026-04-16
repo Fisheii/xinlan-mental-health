@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 模拟 0.8 秒的网络请求延迟，然后跳转到学生端
             setTimeout(() => {
-                window.location.href = '/student.html';
+                window.location.href = 'student.html';
             }, 800);
         });
     }

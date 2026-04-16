@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沉浸日记 - 心灵氧吧</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        /* ================= 全局 & 变量 ================= */
+        :root {
+            --blur-level: 15px; /* 默认模糊度，可通过JS动态修改 */
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'KaiTi', '楷体', serif; /* 默认使用楷体营造手写感 */
+            color: rgba(255, 255, 255, 0.85);
+            background-color: #1a202c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 动态背景图片层 */
+        .bg-image {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            /* 这里用一张深邃森林的网图代替，实际中可换成你的素材 */
+            background: url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+            z-index: -2;
+            filter: brightness(0.6);
+        }
+
+        /* 动态雪花 Canvas 层 */
+        #snowCanvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ================= 顶部悬浮工具栏 ================= */
+        .toolbar {
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 25px;
+            border-radius: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            font-family: 'PingFang SC', sans-serif;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+        }
+
+        .tool-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tool-divider {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .font-select {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            outline: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* ================= 毛玻璃编辑器主体 ================= */
+        .editor-container {
+            margin-top: 20px;
+            width: 70vw;
+            max-width: 900px;
+            height: 65vh;
+            background: rgba(20, 25, 30, 0.3); /* 偏暗的毛玻璃底色 */
+            backdrop-filter: blur(var(--blur-level));
+            -webkit-backdrop-filter: blur(var(--blur-level));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: backdrop-filter 0.3s ease;
+        }
+
+        .editor-content {
+            flex: 1;
+            padding: 40px 50px;
+            font-size: 1.4rem;
+            line-height: 2;
+            letter-spacing: 2px;
+            outline: none;
+            overflow-y: auto;
+            /* 墨水晕染渐显动画准备 */
+            text-shadow: 0 0 1px rgba(255,255,255,0.2);
+        }
+
+        /* 自定义滚动条 */
+        .editor-content::-webkit-scrollbar { width: 6px; }
+        .editor-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+        /* 占位符样式 */
+        .editor-content[empty]:before {
+            content: attr(placeholder);
+            color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        /* ================= 底部状态栏 ================= */
+        .status-bar {
+            padding: 15px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'PingFang SC', sans-serif;
+        }
+
+        /* 模糊度调节滑块 */
+        .blur-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: absolute;
+            left: 30px;
+            bottom: 15px;
+        }
+        
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100px;
+            background: rgba(255,255,255,0.2);
+            height: 4px;
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* 返回按钮 */
+        .back-nav {
+            position: absolute;
+            top: 30px; left: 30px;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-family: sans-serif;
+            display: flex; align-items: center; gap: 5px;
+            transition: color 0.3s;
+        }
+        .back-nav:hover { color: #fff; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 背景层 -->
+    <div class="bg-image"></div>
+    <canvas id="snowCanvas"></canvas>
+
+    <a href="javascript:history.back()" class="back-nav"><i class="ri-arrow-left-line"></i> 返回</a>
+
+    <!-- 悬浮工具栏 -->
+    <div class="toolbar">
+        <select class="font-select" id="fontSelect" title="字体选择">
+            <option value="'KaiTi', serif">楷体</option>
+            <option value="'SimSun', serif">宋体</option>
+            <option value="'PingFang SC', sans-serif">黑体</option>
+        </select>
+        <div class="tool-divider"></div>
+        <button class="tool-btn" title="加粗" onclick="document.execCommand('bold')"><i class="ri-bold"></i></button>
+        <button class="tool-btn" title="斜体" onclick="document.execCommand('italic')"><i class="ri-italic"></i></button>
+        <button class="tool-btn" title="下划线" onclick="document.execCommand('underline')"><i class="ri-underline"></i></button>
+        <div class="tool-divider"></div>
+        <button class="tool-btn" title="居中" onclick="document.execCommand('justifyCenter')"><i class="ri-align-center"></i></button>
+        <div class="tool-divider"></div>
+        <!-- 切换天气/场景按钮 -->
+        <button class="tool-btn" title="切换场景(雨/雪/篝火)"><i class="ri-cloud-windy-line"></i></button>
+        <!-- 保存/揉纸交互按钮 -->
+        <button class="tool-btn" title="封存日记"><i class="ri-save-3-line"></i></button>
+    </div>
+
+    <!-- 编辑器主体 -->
+    <div class="editor-container">
+        <!-- 文本输入区 -->
+        <div class="editor-content" id="editor" contenteditable="true" placeholder="青青子衿，悠悠我心... 写下你此刻的心绪。"></div>
+        
+        <!-- 底部状态栏 -->
+        <div class="status-bar">
+            <!-- 模糊度调节 -->
+            <div class="blur-control" title="调节背景清晰度">
+                <i class="ri-drop-line"></i>
+                <input type="range" id="blurSlider" min="0" max="30" value="15">
+            </div>
+
+            <span id="wordCount">0 字符</span>
+            <span>|</span>
+            <span id="timeDisplay">00:00</span>
+            <span>|</span>
+            <span><i class="ri-snowy-line"></i> 初雪</span>
+        </div>
+    </div>
+
+    <script>
+        // 1. 编辑器字数统计与占位符逻辑
+        const editor = document.getElementById('editor');
+        const wordCount = document.getElementById('wordCount');
+        
+        // 初始化占位符状态
+        editor.setAttribute('empty', '');
+
+        editor.addEventListener('input', function() {
+            // 控制占位符显示/隐藏
+            if (this.textContent.trim() !== '') {
+                this.removeAttribute('empty');
+            } else {
+                this.setAttribute('empty', '');
+            }
+            // 统计字符
+            const text = this.innerText || this.textContent;
+            wordCount.innerText = `${text.replace(/\s/g, '').length} 字符`;
+        });
+
+        // 2. 动态调节背景模糊度
+        const blurSlider = document.getElementById('blurSlider');
+        blurSlider.addEventListener('input', function() {
+            document.documentElement.style.setProperty('--blur-level', `${this.value}px`);
+        });
+
+        // 3. 字体切换
+        const fontSelect = document.getElementById('fontSelect');
+        fontSelect.addEventListener('change', function() {
+            document.body.style.fontFamily = this.value;
+        });
+
+        // 4. 实时时间显示
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('timeDisplay').innerText = 
+                now.getHours().toString().padStart(2, '0') + ':' + 
+                now.getMinutes().toString().padStart(2, '0');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // 5. Canvas 唯美雪花全屏特效 (轻量级)
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, snowflakes;
+
+        function initCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            snowflakes = [];
+            for (let i = 0; i < 150; i++) {
+                snowflakes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 2 + 0.5, // 半径
+                    d: Math.random() * 1 + 0.5  // 下落速度
+                });
+            }
+        }
+
+        function drawSnow() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            for (let i = 0; i < snowflakes.length; i++) {
+                let p = snowflakes[i];
+                ctx.moveTo(p.x, p.y);
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            moveSnow();
+            requestAnimationFrame(drawSnow);
+        }
+
+        function moveSnow() {
+            for (let i = 0; i < snowflakes.length; i++) {
+                let p = snowflakes[i];
+                p.y += Math.pow(p.d, 2) + 0.5;
+                p.x += Math.sin(p.y * 0.01) * 0.5; // 轻微风吹摆动
+                if (p.y > height) {
+                    snowflakes[i] = { x: Math.random() * width, y: 0, r: p.r, d: p.d };
+                }
+            }
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        drawSnow();
+    </script>
+</body>
+</html>

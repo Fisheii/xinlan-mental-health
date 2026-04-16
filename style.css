@@ -289,3 +289,179 @@ body, html { width: 100%; height: 100%; overflow: hidden; background-color: tran
 .help-item i { font-size: 1.2rem; margin-top: 2px; }
 .help-item h5 { color: #2d3748; font-size: 0.95rem; margin-bottom: 4px; }
 .help-item span { color: #718096; font-size: 0.75rem; line-height: 1.4; }
+
+/* ================= 心灵氧吧 专属样式 ================= */
+.oxygen-body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    /* 极简治愈渐变背景 */
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    color: #333;
+    overflow-x: hidden;
+}
+
+/* 动态背景光晕效果 */
+.ambient-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: 
+        radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.4), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(240, 248, 255, 0.5), transparent 25%);
+    animation: ambientPulse 15s ease-in-out infinite alternate;
+}
+
+@keyframes ambientPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.1); opacity: 1; }
+}
+
+.oxygen-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.oxygen-header {
+    text-align: center;
+    margin-bottom: 50px;
+    position: relative;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.oxygen-header h1 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    letter-spacing: 4px;
+    margin-bottom: 15px;
+}
+
+.oxygen-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.back-btn {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateX(-5px);
+}
+
+/* 治愈系卡片网格 */
+.healing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.healing-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.healing-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 15px 35px 0 rgba(31, 38, 135, 0.15);
+}
+
+.card-icon {
+    font-size: 3rem;
+    color: #5b7c99;
+    margin-bottom: 20px;
+    display: inline-block;
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));
+}
+
+.healing-card h3 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.healing-card p {
+    font-size: 0.95rem;
+    color: #596a7b;
+    line-height: 1.6;
+}
+/* 心灵氧吧 入口卡片专属样式 */
+.oxygen-entry-card {
+    background: linear-gradient(135deg, rgba(224, 195, 252, 0.2) 0%, rgba(142, 197, 252, 0.2) 100%);
+    border: 1px solid rgba(142, 197, 252, 0.4);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-top: 20px; /* 根据你的实际排版调整 */
+}
+
+.oxygen-entry-card:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, rgba(224, 195, 252, 0.4) 0%, rgba(142, 197, 252, 0.4) 100%);
+    box-shadow: 0 10px 25px rgba(142, 197, 252, 0.2);
+}
+
+.oxygen-entry-card .card-icon {
+    font-size: 2.5rem;
+    color: #8ec5fc;
+    margin-right: 20px;
+}
+
+.oxygen-entry-card .card-info h3 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.oxygen-entry-card .card-info p {
+    margin: 0;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.oxygen-entry-card .go-icon {
+    margin-left: auto;
+    font-size: 1.5rem;
+    color: #bdc3c7;
+    transition: transform 0.3s;
+}
+
+.oxygen-entry-card:hover .go-icon {
+    transform: translateX(5px);
+    color: #8ec5fc;
+}

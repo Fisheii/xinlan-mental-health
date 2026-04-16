@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正念呼吸 - 心灵氧吧</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        /* ================= 极简高级感冥想样式 ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #1a1a2e; /* 深邃夜空蓝 */
+            color: #fff;
+            overflow: hidden;
+            transition: background 2s ease;
+        }
+
+        /* 动态渐变背景 */
+        .bg-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #16213e 0%, #0f3460 50%, #1a1a2e 100%);
+            z-index: -1;
+            opacity: 0.8;
+            transition: all 4s ease-in-out;
+        }
+
+        /* 顶部导航 */
+        .nav-bar {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* 呼吸光晕容器 */
+        .breath-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 外层扩散光晕 */
+        .circle-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(138, 178, 248, 0.2) 0%, transparent 70%);
+            transform: scale(0.5);
+            transition: transform 1s linear;
+        }
+
+        /* 内层核心光球 */
+        .circle-inner {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #e0c3fc 0%, #8ec5fc 100%);
+            box-shadow: 0 0 40px rgba(142, 197, 252, 0.5), inset 0 0 20px rgba(255,255,255,0.8);
+            transform: scale(0.8);
+            transition: transform 1s linear;
+        }
+
+        /* 文字提示 */
+        .instruction {
+            margin-top: 60px;
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 8px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            transition: opacity 0.5s;
+        }
+
+        .sub-text {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        /* 控制按钮 */
+        .controls {
+            margin-top: 50px;
+        }
+
+        .start-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+
+        .start-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-gradient" id="bgGradient"></div>
+
+    <div class="nav-bar">
+        <button class="back-btn" onclick="history.back()"><i class="ri-arrow-left-line"></i> 返回氧吧</button>
+    </div>
+
+    <div class="breath-container">
+        <div class="circle-outer" id="circleOuter"></div>
+        <div class="circle-inner" id="circleInner"></div>
+    </div>
+
+    <div class="instruction" id="instruction">准备</div>
+    <div class="sub-text" id="subText">点击下方按钮开始 4-7-8 呼吸法</div>
+
+    <div class="controls">
+        <button class="start-btn" id="startBtn">开始正念</button>
+    </div>
+
+    <!-- 内置轻音乐白噪音 (可替换为你自己的音频链接) -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/02/07/audio_6782672322.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const circleOuter = document.getElementById('circleOuter');
+        const circleInner = document.getElementById('circleInner');
+        const instruction = document.getElementById('instruction');
+        const subText = document.getElementById('subText');
+        const startBtn = document.getElementById('startBtn');
+        const bgMusic = document.getElementById('bgMusic');
+        const bgGradient = document.getElementById('bgGradient');
+
+        let isBreathing = false;
+        let breathInterval;
+
+        // 4-7-8 呼吸法时间配置 (毫秒)
+        const breatheTime = 4000; // 吸气 4秒
+        const holdTime = 7000;    // 屏气 7秒
+        const exhaleTime = 8000;  // 呼气 8秒
+        const totalTime = breatheTime + holdTime + exhaleTime;
+
+        function breathAnimation() {
+            // 1. 吸气阶段
+            instruction.innerText = '吸气...';
+            circleOuter.style.transition = `transform ${breatheTime}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+            circleInner.style.transition = `transform ${breatheTime}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+            circleOuter.style.transform = 'scale(1.5)';
+            circleInner.style.transform = 'scale(1.2)';
+            bgGradient.style.background = 'radial-gradient(circle at center, #1f4068 0%, #16213e 50%, #1a1a2e 100%)';
+
+            // 2. 屏气阶段
+            setTimeout(() => {
+                instruction.innerText = '保持...';
+                // 保持状态，光晕微微闪烁
+            }, breatheTime);
+
+            // 3. 呼气阶段
+            setTimeout(() => {
+                instruction.innerText = '呼气...';
+                circleOuter.style.transition = `transform ${exhaleTime}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+                circleInner.style.transition = `transform ${exhaleTime}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+                circleOuter.style.transform = 'scale(0.5)';
+                circleInner.style.transform = 'scale(0.8)';
+                bgGradient.style.background = 'radial-gradient(circle at center, #16213e 0%, #0f3460 50%, #1a1a2e 100%)';
+            }, breatheTime + holdTime);
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (!isBreathing) {
+                isBreathing = true;
+                startBtn.innerText = '停止正念';
+                subText.innerText = '将注意力集中在光晕的起伏上';
+                
+                // 播放背景白噪音/颂钵音
+                bgMusic.volume = 0.3;
+                bgMusic.play();
+
+                // 立即执行一次，然后按总时长循环
+                breathAnimation();
+                breathInterval = setInterval(breathAnimation, totalTime);
+            } else {
+                // 停止逻辑
+                isBreathing = false;
+                startBtn.innerText = '开始正念';
+                instruction.innerText = '准备';
+                subText.innerText = '点击下方按钮开始 4-7-8 呼吸法';
+                clearInterval(breathInterval);
+                
+                // 音乐淡出暂停
+                bgMusic.pause();
+                
+                // 恢复初始大小
+                circleOuter.style.transition = 'transform 1s ease';
+                circleInner.style.transition = 'transform 1s ease';
+                circleOuter.style.transform = 'scale(0.5)';
+                circleInner.style.transform = 'scale(0.8)';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心灵氧吧 - 心澜智护</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入图标库 -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body class="oxygen-body">
+    <!-- 动态柔和背景 -->
+    <div class="ambient-background"></div>
+
+    <div class="oxygen-container">
+        <header class="oxygen-header">
+            <button class="back-btn" onclick="history.back()"><i class="ri-arrow-left-line"></i> 返回</button>
+            <h1>心灵氧吧</h1>
+            <p>深呼吸，在这里卸下所有的疲惫，遇见宁静的自己。</p>
+        </header>
+
+        <!-- 功能卡片网格 -->
+        <div class="healing-grid">
+            <!-- 1. 沉浸式日记 -->
+            <div class="healing-card" onclick="location.href='diary.html'">
+                <div class="card-icon"><i class="ri-quill-pen-line"></i></div>
+                <h3>沉浸日记</h3>
+                <p>在雨季、森林或篝火旁，写下你的心语，支持手势揉纸释放压力。</p>
+            </div>
+
+            <!-- 2. 赛博捏捏乐 -->
+            <div class="healing-card" onclick="location.href='squishy.html'">
+                <div class="card-icon"><i class="ri-cake-3-line"></i></div>
+                <h3>赛博捏捏乐</h3>
+                <p>揉捏柔软的面包与云朵，感受指尖的弹力与震动反馈。</p>
+            </div>
+
+            <!-- 3. 故事共鸣 -->
+            <div class="healing-card" onclick="location.href='story.html'">
+                <div class="card-icon"><i class="ri-mic-line"></i></div>
+                <h3>故事共鸣</h3>
+                <p>朗读治愈文案，让声音化作光影，生成你的专属疗愈背景。</p>
+            </div>
+
+            <!-- 4. 呼吸冥想 -->
+            <div class="healing-card" onclick="location.href='meditation.html'">
+                <div class="card-icon"><i class="ri-leaf-line"></i></div>
+                <h3>正念呼吸</h3>
+                <p>跟随光晕的节奏，吸气、呼气，找回内心的平静。</p>
+            </div>
+
+            <!-- 5. 情绪调色盘 (新增) -->
+            <div class="healing-card" onclick="location.href='emotion-flow.html'">
+                <div class="card-icon"><i class="ri-palette-line"></i></div>
+                <h3>情绪流体</h3>
+                <p>指尖滑动，让复杂的思绪如色彩般在水中化开。</p>
+            </div>
+
+            <!-- 6. 数字颂钵 (新增) -->
+            <div class="healing-card" onclick="location.href='bowl.html'">
+                <div class="card-icon"><i class="ri-headphone-line"></i></div>
+                <h3>频率共鸣</h3>
+                <p>轻触边缘，聆听颂钵的空灵回响，感受频率的疗愈。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

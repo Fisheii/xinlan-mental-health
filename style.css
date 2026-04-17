@@ -541,3 +541,120 @@ body, html { width: 100%; height: 100%; overflow: hidden; background-color: tran
     transform: scale(0) rotate(720deg) translateZ(-500px) !important;
     opacity: 0;
 }
+/* --- 日记输入区：手写与打字机质感 --- */
+.diary-editor {
+    width: 100%;
+    min-height: 60vh;
+    padding: 20px;
+    outline: none;
+    color: rgba(255, 255, 255, 0.85); /* 柔和的文字颜色 */
+    font-family: 'KaiTi', '楷体', STKaiti, serif; /* 默认楷体 */
+    font-size: 22px;
+    line-height: 2.5; /* 较大的行高模拟信纸 */
+    letter-spacing: 2px;
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.3); /* 微微的晕染感 */
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+/* 模拟打字机光标 */
+.diary-editor:focus {
+    caret-color: #fff; /* 光标颜色 */
+}
+
+/* 占位符样式 (替代原来的今日心语) */
+.diary-editor:empty:before {
+    content: attr(placeholder);
+    color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+/* --- 场景背景过渡效果 --- */
+body {
+    transition: background-image 1.5s ease-in-out, background-color 1.5s ease;
+    background-size: cover;
+    background-position: center;
+}
+
+/* --- 互动按钮特效 --- */
+.magic-btn {
+    color: #ffd700; /* 给魔法按钮一点特殊的颜色 */
+}
+.magic-btn:hover {
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+/* --- 叠纸飞走动画 (治愈系效果) --- */
+@keyframes paperFoldAndFly {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    20% { transform: scale(0.9) rotateX(20deg) rotateY(10deg); } /* 模拟初次折叠 */
+    50% { transform: scale(0.5) rotateX(60deg) rotateY(40deg) skew(15deg); opacity: 0.8; } /* 变成纸飞机状 */
+    100% { transform: scale(0.1) translate(800px, -800px) rotateZ(45deg); opacity: 0; } /* 飞向右上角消失 */
+}
+
+.fold-animation {
+    animation: paperFoldAndFly 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    pointer-events: none; /* 动画期间禁止点击 */
+}
+/* --- 纸飞机折叠飞走动画 --- */
+@keyframes paperAirplaneFly {
+    0% {
+        /* 初始状态：平铺 */
+        transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1);
+        opacity: 1;
+    }
+    20% {
+        /* 第一步：模拟两边向中间对折 (沿Y轴收缩) */
+        transform: perspective(1000px) rotateX(20deg) scaleX(0.6) scaleY(0.9);
+        opacity: 0.9;
+        /* 文字逐渐变淡 */
+        color: rgba(255, 255, 255, 0.3); 
+    }
+    40% {
+        /* 第二步：折成尖角形状，准备起飞 */
+        transform: perspective(1000px) rotateX(60deg) rotateZ(-45deg) scale(0.5);
+        opacity: 0.8;
+        color: transparent; /* 文字完全隐藏，只留纸张轮廓 */
+    }
+    60% {
+        /* 第三步：起飞前的蓄力（微微后撤） */
+        transform: perspective(1000px) rotateX(70deg) rotateZ(-45deg) scale(0.4) translate(-50px, 50px);
+        opacity: 0.8;
+    }
+    100% {
+        /* 第四步：迅速飞向右上角并消失 */
+        transform: perspective(1000px) rotateX(80deg) rotateZ(-45deg) scale(0.05) translate(2000px, -2000px);
+        opacity: 0;
+    }
+}
+
+/* 触发动画的专属类 */
+.fly-away-animation {
+    /* 使用 cubic-bezier 让起飞动作有“嗖”一下的加速感 */
+    animation: paperAirplaneFly 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform-origin: center center;
+    pointer-events: none; /* 动画期间禁止输入 */
+}
+
+/* --- 飞走后的治愈提示框 (可选) --- */
+.heal-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    border-radius: 30px;
+    color: #fff;
+    font-family: 'KaiTi', serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 9999;
+}
+.heal-toast.show {
+    opacity: 1;
+}

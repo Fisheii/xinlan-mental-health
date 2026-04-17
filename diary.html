@@ -206,17 +206,29 @@
             <option value="'PingFang SC', sans-serif">黑体</option>
         </select>
         <div class="tool-divider"></div>
-        <button class="tool-btn" title="加粗" onclick="document.execCommand('bold')"><i class="ri-bold"></i></button>
-        <button class="tool-btn" title="斜体" onclick="document.execCommand('italic')"><i class="ri-italic"></i></button>
-        <button class="tool-btn" title="下划线" onclick="document.execCommand('underline')"><i class="ri-underline"></i></button>
-        <div class="tool-divider"></div>
-        <button class="tool-btn" title="居中" onclick="document.execCommand('justifyCenter')"><i class="ri-align-center"></i></button>
-        <div class="tool-divider"></div>
-        <!-- 切换天气/场景按钮 -->
-        <button class="tool-btn" title="切换场景(雨/雪/篝火)"><i class="ri-cloud-windy-line"></i></button>
-        <!-- 保存/揉纸交互按钮 -->
-        <button class="tool-btn" title="封存日记"><i class="ri-save-3-line"></i></button>
+        <button class="tool-btn" id="sceneToggleBtn" title="切换场景(雨/雪/篝火)">
+           <i class="ri-cloud-windy-line"></i>
+        </button>
+    
+        <!-- 保存按钮 -->
+        <button class="tool-btn" id="saveDiaryBtn" title="封存日记">
+          <i class="ri-save-3-line"></i>
+        </button>
+
+         <!-- 新增：互动按钮 (折纸/揉碎) -->
+         <button class="tool-btn magic-btn" id="interactBtn" title="折叠/揉碎纸张">
+          <i class="ri-magic-line"></i> <!-- 建议引入一个魔法棒或折纸的图标 -->
+         </button>
     </div>
+
+<!-- 日记输入区 (必须用 div 并开启 contenteditable) -->
+<div class="diary-container">
+    <div id="diaryEditor" 
+         class="diary-editor" 
+         contenteditable="true" 
+         placeholder="青青子衿，悠悠我心... 写下你此刻的心绪。"></div>
+
+</div>
 
     <!-- 编辑器主体 -->
     <div class="editor-container">
@@ -246,14 +258,6 @@
   </filter>
 </svg>
 
-<!-- 2. 日记纸张的 UI 结构 -->
-<div class="journal-wrapper">
-    <div class="paper" id="journalPaper">
-        <h3>今日心语</h3>
-        <!-- 这里可以换成你自己的 textarea 输入框 -->
-        <p>在这里写下你的烦恼...（长按模拟揉碎它）</p> 
-    </div>
-</div>
 
     <script>
         // 1. 编辑器字数统计与占位符逻辑

@@ -326,7 +326,7 @@ body, html { width: 100%; height: 100%; overflow: hidden; background-color: tran
 }
 
 .oxygen-container {
-    background-image: url('./public/bg-oxygen.png'); /* 确保路径正确 */
+    background: transparent !important;
     background-size: cover;          /* 核心：让背景图按比例缩放，完全覆盖容器 */
     background-position: center;     /* 核心：背景图居中显示 */
     background-repeat: no-repeat;    /* 核心：防止背景图平铺重复 */
